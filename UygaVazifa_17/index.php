@@ -1,61 +1,71 @@
 <?php
-// class Mashina{
-//     public static $name = "BMW";
-//     public $price;
+include "Talabalar.php";
 
-//     public static function test(){
+$talabalar = Talabalar::getAll();
 
-//         return self::$name;
-//     }
-// }
-
-// echo Mashina::test();
-
-
-// class Product{
-
-//     public $name = "BMW";
-//     public function __construct(){
-
-//         echo "Bu otasi<br>";
-//     }
-
-//     public function getName(){
-
-//         return $this->name;
-//     }
-
-//     public function test(){
-//         return "Bu ota classniki!";
-//     }
-// }
-
-// class Kompyuter extends Product{
+if(isset($_POST['add']) && !empty($_POST['fio']) && !empty($_POST['tel']) && !empty($_POST['manzil']) && !empty($_FILES['rasm'])) {
     
-//     public $price;
+    // print_r($_POST);
+    $fio = $_POST['fio'];
+    $tel = $_POST['tel'];
+    $manzil = $_POST['manzil'];
+    $rasm = explode('.',$_FILES['rasm']['name']);
+    $rasmP = 'images/'.date("Y-m-d_H-i-s.").end($rasm);
+    print_r($rasmP);
+    move_uploaded_file($_FILES['rasm']['tmp_name'],$rasmP);
 
-//     public function __construct(){
-        
-//         parent::__construct();
-//         echo "Bu bolasi<br>";
-//     }
-    
-//     public function getPrice(){
-        
-//         return $this->price;
-//     }
-//     public function test(){
-//         return "Bu bola classniki!";
-//     }
-// }
+    $talaba = Talabalar::create($fio,$tel,$manzil,$rasmP);
+    echo $talaba;
+    if($talaba){
+        header("location:index.php");
+    }
+}
 
-// $pr = new Kompyuter();
+if(isset($_GET['del'])){
+    $id = $_GET['del'];
+    if($talaba = Talabalar::delete($id)){
+        header("location:index.php");
+    }
+}
 
-// $pr->name = "Samsung";
-// $pr->price = 10000;
-// echo $pr->getName();
-// echo '<br>';
-// echo $pr->getPrice();
-// echo '<br>';
-// echo $pr->test();
 ?>
+
+
+<table border="1" align="center" style="margin-top: 50px;border-radius:10px" width="80%">
+    <tr>
+        <th>ID</th>
+        <th>FIO</th>
+        <th>Tel</th>
+        <th>Manzil</th>
+        <th>Rasm</th>
+        <th>Edit/Delete</th>
+    </tr>
+    <?php
+        foreach ($talabalar as $talaba) { ?>
+            <tr>
+                <td><?=$talaba['id']?></td>
+                <td><?=$talaba['fio']?></td>
+                <td><?=$talaba['tel']?></td>
+                <td><?=$talaba['manzil']?></td>
+                <td><img src="<?=$talaba['img']?>" width="100" alt=""></td>
+                <td>
+                    <a href="edit.php?id=<?=$talaba['id']?>">Edit</a>
+                    <a href="?del=<?=$talaba['id']?>">Delete</a>
+                </td>
+            </tr>
+       <?php }
+    ?>
+</table><br><br>
+
+
+<form action="" align="center" method="POST" enctype="multipart/form-data">
+            <label for="">FIO:</label>
+            <input type="text" name="fio" placeholder="fio"><br><br>
+            <label for="">Telefon raqami:</label>
+            <input type="text" name="tel" placeholder="tel"><br><br>
+            <label for="">Manzil:</label>
+            <input type="text" name="manzil" placeholder="Manzil"><br><br>
+            <label for="">Rasm:</label>
+            <input type="file" name="rasm"><br><br>
+            <input type="submit" value="Submit" name="add"><br><br>
+</form>

@@ -1,7 +1,7 @@
 <?php
 include "DataBase.php";
 
-class Category extends DataBase
+class Talabalar extends DataBase
 {
 
     protected static $id;
@@ -37,16 +37,18 @@ class Category extends DataBase
         $query = "DELETE FROM " . self::$table . " WHERE id = :id";
         $stmt = self::connect()->prepare($query);
         $stmt->bindParam(":id",self::$id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        if($stmt->execute()){
+            return true;
+        }
+        return false;
     }
 
     public static function create($name,$tel,$manzil,$img)
     {
-        self::$name = $name;
-        self::$tel = $tel;
-        self::$manzil = $manzil;
-        self::$img = $img;
+        self::$name = htmlspecialchars(strip_tags($name));
+        self::$tel = htmlspecialchars(strip_tags($tel));
+        self::$manzil = htmlspecialchars(strip_tags($manzil));
+        self::$img = htmlspecialchars(strip_tags($img));
 
         $query = "INSERT INTO " . self::$table . "(fio,tel,manzil,img) VALUES (:fio,:tel,:manzil,:img)";
         $stmt = self::connect()->prepare($query);
@@ -54,8 +56,11 @@ class Category extends DataBase
         $stmt->bindParam(":tel",self::$tel);
         $stmt->bindParam(":manzil",self::$manzil);
         $stmt->bindParam(":img",self::$img);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        if($stmt->execute()){
+            return true;
+        }
+        return false;
+
     }
 
     public static function update($id,$name,$tel,$manzil,$img)
@@ -73,21 +78,23 @@ class Category extends DataBase
         $stmt->bindParam(":tel",self::$tel);
         $stmt->bindParam(":manzil",self::$manzil);
         $stmt->bindParam(":img",self::$img);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        if($stmt->execute()){
+            return true;
+        }
+        return false;
     }
 
 
 }
 
-echo "<pre>";
-print_r(Category::getAll());
-echo "</pre>";
+// echo "<pre>";
+// print_r(Category::getAll());
+// echo "</pre>";
 
-// Category::$id = 1;
-echo "<pre>";
-print_r(Category::getOne(6));
-echo "</pre>";
+// // Category::$id = 1;
+// echo "<pre>";
+// print_r(Category::getOne(6));
+// echo "</pre>";
 
 // echo "<pre>";
 // print_r(Category::delete());
